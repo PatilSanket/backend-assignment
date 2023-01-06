@@ -17,5 +17,5 @@ Search API is optimised for partial searches with index fields mapped to title a
 
 API Endpoints:
 
-To fetch videos: /videos/   e.g. http://localhost:3000/videos/?page=2,pageSize=10
-To search: /videos/search   e.g. http://localhost:3000/videos/search?q=messi
+1. To fetch videos: /videos/   e.g. http://localhost:3000/videos/?page=2,pageSize=10
+2. To search: /videos/search   e.g. http://localhost:3000/videos/search?q=messi
