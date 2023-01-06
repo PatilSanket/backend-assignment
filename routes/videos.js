@@ -1,8 +1,6 @@
 const express = require('express');
-const assert = require('assert');
-require('dotenv').config();
+const video = require('../utils/dbUtils.js');
 
-const db = process.env.DB_CONNECTION; 
 const router = express.Router();
 
 
@@ -14,9 +12,16 @@ router.get('/videos', (req, res) => {
     const skip = (page - 1) * pageSize;
     const limit = pageSize;
 
-    db.collection('videos').find().sort({'publishedAt': -1}).skip(skip).limit(limit).toArray((err, videos) => {
-      assert.equal(null, err);
-      res.send(videos);
+    video.find()
+    .sort({ publishDate: -1 })
+    .skip(skip)
+    .limit(limit)
+    .exec((error, videos) => {
+      if (error) {
+        res.status(500).send(error);
+      } else {
+        res.send(videos);
+      }
     });
 });
 
@@ -24,9 +29,18 @@ router.get('/videos', (req, res) => {
 router.get('/search', (req, res) => {
     const query = req.query.q;
     
-    db.collection('videos').find({$text: {$search: query}}).sort({'publishedAt': -1}).toArray((err, videos) => {
-        assert.equal(null, err);
-        res.send(videos);
+    video.find( 
+        {
+          $text: {
+            $search: query,
+          }
+        }
+    ).sort({'publishedAt': -1}).exec((error, videos) => {
+        if (error) {
+            res.status(500).send(error);
+        } else {
+            res.send(videos);
+        }
     });
 });
 

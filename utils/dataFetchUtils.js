@@ -1,7 +1,9 @@
 const axios = require('axios');
 require('dotenv').config();
-const db = require('./dbUtils.js')
+const {video, connectToDB} = require('./dbUtils.js');
 const keys = process.env.API_KEYS.split(',');
+
+connectToDB();
 
 // This function fetches the latest videos from YouTube for a given search query
 let fetchVideos = async (searchQuery) => {
@@ -17,7 +19,7 @@ let fetchVideos = async (searchQuery) => {
                         q: searchQuery,
                         type: 'video',
                         part: 'snippet',
-                        maxResults: 20
+                        maxResults: 2
                     }
                 });
                 flag = true;
@@ -31,11 +33,22 @@ let fetchVideos = async (searchQuery) => {
         }
 
         const videos = response.data.items;
-
-        // Insert the videos into the database
-        await db.collection('videos').insertMany(videos);
-
-        console.log(`Inserted ${videos.length} videos into the database`);
+        videos.forEach((i) => {
+            // Create a new Video document
+            const newVideo = new video({
+              title: i.snippet.title,
+              description: i.snippet.description,
+              publishDate: i.snippet.publishedAt,
+              thumbnails: i.snippet.thumbnails,
+            });
+            newVideo.save((error, result) => {
+                if (error) {
+                    console.log('Something went wrong while saving saving videos in database');
+                } else {
+                    console.log(`Inserted ${videos.length} videos into the database`);
+                }
+            });
+        })
   } catch (error) {
     console.error(error);
   }

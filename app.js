@@ -1,5 +1,4 @@
 const express = require('express');
-const initConnection  = require('./utils/dbUtils.js');
 const fetchVideos = require('./utils/dataFetchUtils.js');
 const router = require('./routes/videos');
 require('dotenv').config();
@@ -8,11 +7,9 @@ require('dotenv').config();
 
 const app = express();
 
-initConnection();
-
 setInterval(async () => {
     try {
-      await fetchVideos(process.env.YOUR_SEARCH_QUERY);
+      await fetchVideos(process.env.YOUTUBE_SEARCH_QUERY);
       console.log('async video fetch');
     } catch (err) {
       console.error(err);

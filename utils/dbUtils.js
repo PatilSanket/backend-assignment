@@ -1,22 +1,44 @@
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
 require('dotenv').config();
 
-let db;
+const schema = new mongoose.Schema({
+  title: String,
+  description: String,
+  publishDate: Date,
+  thumbnails: {
+    default: {
+      url: String,
+      width: Number,
+      height: Number,
+    },
+    medium: {
+      url: String,
+      width: Number,
+      height: Number,
+    },
+    high: {
+      url: String,
+      width: Number,
+      height: Number,
+    },
+  },
+});
 
-// Connect to the MongoDB instance
-const client = new MongoClient(process.env.MONGO_URI);
-async function initConnection() {
-  try {
-    // Connect the client to the server (optional starting in v4.7)
-    await client.connect();
-    // Establish and verify connection
-    db = client.db('youtube');
-    //await db.collection('videos').insertOne({'name':'Oden'});
-    console.log('Connected successfully to server');
-  } catch(err) {
-    console.log(`Connected FAILED ${err}`);
-  }
-}
+const video = mongoose.model('video', schema);
+let connection;
 
-module.exports = db;
-module.exports = initConnection;
+module.exports = {
+  video,
+  connectToDB: () => {
+    if (connection) {
+      // Return the existing connection if it exists
+      return connection;
+    }
+    // Create a new connection
+    connection = mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    return connection;
+  },
+};
