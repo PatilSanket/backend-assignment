@@ -10,6 +10,7 @@ let fetchVideos = async (searchQuery) => {
     let response;
     let flag = false;
     try {
+        // For loop to check api with all the keys given in .env file
         for(let i=0;i<keys.length;i++){
             console.log(`keys: ${keys[i]}`);
             try {
@@ -32,9 +33,9 @@ let fetchVideos = async (searchQuery) => {
             throw new Error('No key was valid');
         }
 
+        // Extracting relevant data from response and dumping it in database using video schema defined in dbUtils
         const videos = response.data.items;
         videos.forEach((i) => {
-            // Create a new Video document
             const newVideo = new video({
               title: i.snippet.title,
               description: i.snippet.description,

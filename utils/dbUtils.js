@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+// Schema for video data which will be stored/fetched to/from database
 const schema = new mongoose.Schema({
   title: String,
   description: String,
@@ -27,6 +28,7 @@ const schema = new mongoose.Schema({
 const video = mongoose.model('video', schema);
 let connection;
 
+// exporting video schema defined above and connection client function
 module.exports = {
   video,
   connectToDB: () => {

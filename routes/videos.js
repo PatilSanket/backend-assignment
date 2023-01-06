@@ -1,11 +1,13 @@
 const express = require('express');
-const video = require('../utils/dbUtils.js');
+const {video} = require('../utils/dbUtils.js');
 
 const router = express.Router();
 
+//connectToDB();
 
 // This route returns the stored videos in a paginated response sorted in descending order of published datetime
-router.get('/videos', (req, res) => {
+router.get('/', async (req, res) => {
+    console.log('request received for /videos/');
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
   
@@ -23,19 +25,26 @@ router.get('/videos', (req, res) => {
         res.send(videos);
       }
     });
+
 });
 
 // This route returns the search results as per search query
-router.get('/search', (req, res) => {
+router.get('/search', async (req, res) => {
     const query = req.query.q;
-    
+    console.log('request received for /videos/search');
     video.find( 
-        {
-          $text: {
-            $search: query,
+      {
+        '$search': {
+          'index': 'searchIndex',    // update this value as per your indexName
+          'text': {
+            'query': query,
+            'path': {
+              'wildcard': '*'
+            }
           }
         }
-    ).sort({'publishedAt': -1}).exec((error, videos) => {
+      }
+    ).exec((error, videos) => {
         if (error) {
             res.status(500).send(error);
         } else {
